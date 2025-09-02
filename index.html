@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Promo Timer</title>
+<style>
+  body {
+    margin:0;
+    font-family: Arial, sans-serif;
+  }
+  #promo-timer {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #ff0000, #ff7300);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="promo-timer">20% en productos seleccionados</div>
+
+<script>
+function actualizarPromo() {
+  const ahora = new Date();
+  const inicio = new Date();
+  inicio.setHours(17,0,0,0);
+  const fin = new Date();
+  fin.setHours(23,59,59,999);
+
+  const elemento = document.getElementById("promo-timer");
+  let tiempoRestante;
+
+  if(ahora < inicio){
+    elemento.innerText = "20% en productos seleccionados – inicia a las 17:00";
+    return;
+  } else if(ahora >= inicio && ahora <= fin){
+    tiempoRestante = fin.getTime() - ahora.getTime();
+  } else {
+    elemento.innerText = "20% en productos seleccionados – promoción finalizada";
+    return;
+  }
+
+  const horas = Math.floor((tiempoRestante / (1000*60*60)) % 24);
+  const minutos = Math.floor((tiempoRestante / (1000*60)) % 60);
+  const segundos = Math.floor((tiempoRestante / 1000) % 60);
+
+  elemento.innerText = `20% en productos seleccionados – ${horas.toString().padStart(2,'0')}:${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')} restantes`;
+}
+
+setInterval(actualizarPromo,1000);
+actualizarPromo();
+</script>
+</body>
+</html>
