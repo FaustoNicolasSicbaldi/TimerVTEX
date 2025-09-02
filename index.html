@@ -10,37 +10,49 @@
     font-family: Arial, sans-serif;
   }
   #promo-timer {
-    font-size: 1.5rem;
+    font-size: 2vw; /* Responsive */
     font-weight: bold;
     color: white;
     background: linear-gradient(135deg, #ff0000, #ff7300);
-    padding: 15px;
-    border-radius: 10px;
+    padding: 2vw;
+    border-radius: 1vw;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
   }
 </style>
 </head>
 <body>
-<div id="promo-timer">20% en productos seleccionados</div>
+<div id="promo-timer">Cargando...</div>
 
 <script>
-function actualizarPromo() {
+// Leer parámetros de la URL
+function getQueryParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    startHour: parseInt(params.get('startHour')) || 17,
+    endHour: parseInt(params.get('endHour')) || 23,
+    message: params.get('message') || "20% en productos seleccionados"
+  }
+}
+
+function actualizarPromo({startHour, endHour, message}) {
   const ahora = new Date();
   const inicio = new Date();
-  inicio.setHours(17,0,0,0);
+  inicio.setHours(startHour,0,0,0);
   const fin = new Date();
-  fin.setHours(23,59,59,999);
+  fin.setHours(endHour,59,59,999);
 
   const elemento = document.getElementById("promo-timer");
   let tiempoRestante;
 
   if(ahora < inicio){
-    elemento.innerText = "20% en productos seleccionados – inicia a las 17:00";
+    elemento.innerText = `${message} – inicia a las ${startHour}:00`;
     return;
   } else if(ahora >= inicio && ahora <= fin){
     tiempoRestante = fin.getTime() - ahora.getTime();
   } else {
-    elemento.innerText = "20% en productos seleccionados – promoción finalizada";
+    elemento.innerText = `${message} – promoción finalizada`;
     return;
   }
 
@@ -48,11 +60,13 @@ function actualizarPromo() {
   const minutos = Math.floor((tiempoRestante / (1000*60)) % 60);
   const segundos = Math.floor((tiempoRestante / 1000) % 60);
 
-  elemento.innerText = `20% en productos seleccionados – ${horas.toString().padStart(2,'0')}:${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')} restantes`;
+  elemento.innerText = `${message} – ${horas.toString().padStart(2,'0')}:${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')} restantes`;
 }
 
-setInterval(actualizarPromo,1000);
-actualizarPromo();
+// Ejecutar cada segundo
+const params = getQueryParams();
+setInterval(() => actualizarPromo(params), 1000);
+actualizarPromo(params);
 </script>
 </body>
 </html>
