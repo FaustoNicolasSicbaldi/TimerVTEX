@@ -10,7 +10,7 @@
     font-family: Arial, sans-serif;
   }
   #promo-timer {
-    font-size: 2vw; /* Responsive */
+    font-size: 2vw;
     font-weight: bold;
     color: white;
     background: linear-gradient(135deg, #ff0000, #ff7300);
@@ -19,6 +19,7 @@
     text-align: center;
     width: 100%;
     box-sizing: border-box;
+    transition: all 0.3s ease;
   }
 </style>
 </head>
@@ -32,27 +33,39 @@ function getQueryParams() {
   return {
     startHour: parseInt(params.get('startHour')) || 17,
     endHour: parseInt(params.get('endHour')) || 23,
-    message: params.get('message') || "20% en productos seleccionados"
+    message: params.get('message') || "20% en productos seleccionados",
+    bgColorStart: params.get('bgColorStart') || "#ff0000",
+    bgColorEnd: params.get('bgColorEnd') || "#ff7300",
+    textColor: params.get('textColor') || "#ffffff",
+    padding: params.get('padding') || "2vw",
+    fontSize: params.get('fontSize') || "2vw",
+    borderRadius: params.get('borderRadius') || "1vw"
   }
 }
 
-function actualizarPromo({startHour, endHour, message}) {
+function actualizarPromo(params) {
   const ahora = new Date();
   const inicio = new Date();
-  inicio.setHours(startHour,0,0,0);
+  inicio.setHours(params.startHour,0,0,0);
   const fin = new Date();
-  fin.setHours(endHour,59,59,999);
+  fin.setHours(params.endHour,59,59,999);
 
   const elemento = document.getElementById("promo-timer");
+  elemento.style.background = `linear-gradient(135deg, ${params.bgColorStart}, ${params.bgColorEnd})`;
+  elemento.style.color = params.textColor;
+  elemento.style.padding = params.padding;
+  elemento.style.fontSize = params.fontSize;
+  elemento.style.borderRadius = params.borderRadius;
+
   let tiempoRestante;
 
   if(ahora < inicio){
-    elemento.innerText = `${message} – inicia a las ${startHour}:00`;
+    elemento.innerText = `${params.message} – inicia a las ${params.startHour}:00`;
     return;
   } else if(ahora >= inicio && ahora <= fin){
     tiempoRestante = fin.getTime() - ahora.getTime();
   } else {
-    elemento.innerText = `${message} – promoción finalizada`;
+    elemento.innerText = `${params.message} – promoción finalizada`;
     return;
   }
 
@@ -60,10 +73,9 @@ function actualizarPromo({startHour, endHour, message}) {
   const minutos = Math.floor((tiempoRestante / (1000*60)) % 60);
   const segundos = Math.floor((tiempoRestante / 1000) % 60);
 
-  elemento.innerText = `${message} – ${horas.toString().padStart(2,'0')}:${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')} restantes`;
+  elemento.innerText = `${params.message} – ${horas.toString().padStart(2,'0')}:${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')} restantes`;
 }
 
-// Ejecutar cada segundo
 const params = getQueryParams();
 setInterval(() => actualizarPromo(params), 1000);
 actualizarPromo(params);
